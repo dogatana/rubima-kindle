@@ -1,0 +1,539 @@
+@charset "utf-8";
+/*
+.css: Hiki theme for Rubyist Magazine.
+
+ただただしさんの「ruby-lang.css: tDiary theme for ruby-lang.org.」を
+ベースに作成しました。
+オリジナルテーマ作者のただただしさんに感謝します。
+
+You can redistribute it and/or modify it under the same term as Ruby.
+
+Copyright 2004 (C) by TADA Tadashi <sho@spc.gr.jp>
+Copyright 2004 (C) by Yamamoto Dan <dan@dgames.jp>
+*/
+
+
+body {
+	margin: 0;
+	color: #1e1e1e;
+	background-color: #fff;
+}
+
+div.adminmenu {
+	text-align: right;
+	margin-top: 0.3em;
+	padding-right: 0.5em;
+	font-size: 10px;
+}
+
+/*
+div.adminmenu br { display: none; }
+
+span.adminmenu {
+	color: #ffffff;	
+	border-style: solid;
+	border-width: 0px 1px 1px 0px;
+	padding: 1px;
+}
+
+.adminmenu a { 		color : #666666 ; text-decoration:none; }
+.adminmenu a:visited{ 	color : #666666 ; }
+.adminmenu a:hover { 	color : #000088 ; text-decoration:none; }
+*/
+h1 {
+	/* margin-top: 128px; */
+	margin-bottom: 0.4em;
+	padding-left: 0.2em;
+	font-size: large;
+/*	text-align: right;*/
+/*	color: #888;*/
+	border-color: #333333;
+	border-width: 0px 0px 1px 0px;
+	border-style: solid;
+}
+
+div.body a {
+	color: #AD273F;
+	background-color: transparent;
+}
+
+div.body a:visited {
+	color: #4c0b00;
+	background-color: transparent;
+}
+
+div.body a:hover {
+	color: #ff2600;
+	background-color: transparent;
+}
+
+h1.header a {	color : #444 ; text-decoration:none; }
+div.body h3 a {		text-decoration:none; }
+div.body h4 a {		text-decoration:none; }
+
+div.referer, div.refererlist, div.day div.form {
+	font-size: small;
+	margin-left: 3em;
+	border-style: solid;
+	border-color: #a11;
+	border-width: 1px;
+	margin-bottom: 0.5em;
+	padding: 0.5em;
+}
+
+div.day div.field {
+	display: inline;
+	margin-right: 1em;
+}
+
+img.icon {
+	float: right;
+	margin-left: 0.5em;
+	border: none;
+}
+
+img.amazon {
+        float: right;
+        margin-left: 0.5em;
+        border: none;
+}
+
+img.right {
+        float: right;
+        margin-left: 0.5em;
+        border: none;
+}
+
+img.ext {
+	border: none;
+}
+
+div.comment {
+	font-size: x-small;
+	/* display: none; */
+}
+
+div.trackbacks {
+	font-size: small;
+	display: inline;
+}
+
+/* whole-contents */
+/*
+div.whole-contents {
+	position: relative;
+}
+*/
+/* main */
+div.main {
+	/* background-image: url(rubima_logo_l.png); background-repeat: no-repeat; */
+	/* background-position: 0px 44px; */
+	margin-top: 0px;
+	/* margin-left: 150px; */
+	margin-right: 0.6em;
+	padding: 0.0em;
+	padding-top: 0em;
+	padding-left: 0em;
+	/* max-width: 40em; */
+	min-width: 480px;
+}
+
+div.main hr {
+	width: 96%;
+	color: #888;
+	background-color: transparent;
+}
+
+div.main hr.sep {
+	/* display: none; */
+	margin: 0px;
+}
+
+div.main h2 {
+	margin-top: 0.8em;
+	margin-bottom: 0.8em;
+	font-size: 110%;
+	padding-left: 0.6em;
+	padding-top: 0.2em;
+	padding-bottom: 0.2em;
+	color: #ffffff;
+	background-color: #696969;
+}
+
+div.main p img {
+	margin: 0.2em;
+	margin-right: 0.8em;
+	margin-bottom: 0.8em;
+	float : left;
+}
+
+div.main p em img {
+	margin: 0.2em;
+	margin-right: 0.8em;
+	margin-bottom: 0.8em;
+	float : none;
+}
+
+div.main p strong img {
+	margin: 0px;
+	padding: 0px;
+	float : none;
+	clear : both;
+}
+
+div.main dt img {
+	margin: 0.6em;
+	float : left;
+}
+
+div.main dd img {
+	margin: 0.2em;
+	margin-right: 0.8em;
+	margin-left: 0.6em;
+	margin-bottom: 0.6em;
+	float : right;
+}
+
+div.main dl {
+	clear : none;
+}
+
+div.main div.day,h2,h3,h4,h5,h6,h7,h8,h9, hr {
+	clear : both;
+}
+
+div.main h2 a:link, div.main h2 a:visited {
+	color: #ffffff;
+	background-color: transparent;
+	text-decoration: none;
+}
+
+div.main h2 span.title {
+}
+
+div.main div.day {
+	margin-right: 0em;
+	font-size: 90%;
+}
+
+div.main div.section {
+	margin-left: 1em;
+}
+
+div.main span.readmore {
+	font-size: 80%;
+}
+
+div.main div.lm {
+	margin-top: 0em;
+	margin-bottom: 1em;
+	margin-right: 1em;
+	text-align: right;
+	font-size: 75%;
+}
+
+span.lm {
+	border-style: dashed;
+	border-color: #950000;
+	border-width: 1px 0px 0px 0px;
+}
+
+div.main h3 {
+	font-size: 110%;
+	border-color: #950000;
+	border-width: 0px 0px 1px 0px;
+	border-style: solid;
+}
+
+div.main h4 {
+	margin-left: 0.6em;
+	border-color: #950000;
+	border-width: 0px 0px 1px 0px;
+	border-style: dashed;
+	font-size: 100%;
+}
+
+div.main h5,h6,h7,h8,h9 {
+	margin: 0.0em;
+	padding: 0.4em 1em;
+	font-size: 100%;
+}
+
+div.main p {
+	margin-top: 0px;
+	margin-bottom: 0.5em;
+	line-height: 1.5;
+}
+
+/*
+div.main div.body div.section p {
+	text-indent: 1em;
+}
+*/
+div.main li {
+	line-height: 1.5;
+}
+
+div.main ul, div.main dl {
+	margin-top: 0.2em;
+	margin-left: 2em;
+	padding-left: 0em;
+}
+
+div.main dt {
+	margin-top: 0.5em;
+	font-weight: bold;
+}
+
+div.main dd {
+	margin-left: 2em;
+	line-height: 140%;
+}
+
+div.main pre {
+	border-style: solid;
+	border-width: 1px;
+	border-color: #888;
+	margin-left: 2em;
+	padding: 4px;
+	clear : both;
+}
+
+div.main blockquote {
+/*	font-style: italic;*/
+	border-style: solid;
+	border-width: 1px;
+	color: #333333;
+	border-color: #888888;
+	background-color: #f0f0f0;
+	padding: 8px;
+	padding-top: 8px;
+	padding-bottom: 0px;
+	clear : both;
+}
+
+div.main table {
+	margin: 1em;
+	border-collapse: collapse;
+	text-align: center;
+}
+
+div.main td {
+	padding: 2px;
+	padding-left: 0.6em;
+	padding-right: 0.6em;
+	border: thin solid #888;
+}
+
+div.form {
+	clear: right;
+}
+
+span.corres {
+	font-size: 80%;
+	font-weight: lighter;
+}
+
+div.main span.footnote a {
+/*	vertical-align: super;*/
+	font-size: x-small;
+	text-decoration: none;
+}
+
+div.main p.footnote {
+	font-size: small;
+}
+
+div.main p.footnote a {
+	text-decoration: none;
+}
+
+/* rightbar */
+div.footer {
+	font-size: 90%;
+	text-decoration: none;
+	text-align: right;
+	margin-right: 1em;
+	margin-bottom: 1em;
+	padding-top: 36px;
+	clear: both;
+}
+
+
+/* for attach_rb */
+.LineNumber {
+	color : #aaa;
+}
+.TkSTRING {
+	color : #00a;
+}
+.TkIDENTIFIER {
+	color : #000;
+}
+.TkRD-COMMENT {
+	color : #0a0;
+}
+.TkCOMMENT {
+	color : #0a0;
+}
+
+.TkUNDEF {}
+.TkBEGIN,.TkRESCUE,.TkENSURE,.TkMODULE,.TkCLASS,.TkDEF,.TkEND,.TkIF,.TkUNLESS,.TkTHEN,.TkELSIF,.TkELSE,.TkCASE,.TkWHEN,.TkWHILE,.TkUNTIL,.TkFOR,.TkRETURN {
+	color : #a00;
+}
+.TkBREAK {}
+.TkNEXT {}
+.TkREDO {}
+.TkRETRY {}
+.TkIN {}
+.TkDO {}
+.TkYIELD {}
+.TkSUPER {}
+.TkSELF {}
+.TkNIL {
+	color : Red;
+}
+.TkTRUE {
+	color : Red;
+}
+.TkFALSE {
+	color : Red;
+}
+.TkAND {}
+.TkOR {}
+.TkNOT {}
+.TkIF-MOD {}
+.TkUNLESS-MOD {}
+.TkWHILE-MOD {}
+.TkUNTIL-MOD {}
+.TkALIAS {}
+.TkDEFINED {}
+.TklBEGIN {}
+.TklEND {}
+.Tk--LINE-- {}
+.Tk--FILE-- {}
+.TkFID {}
+.TkGVAR {}
+.TkIVAR {}
+.TkCONSTANT {}
+.TkINTEGER {}
+.TkFLOAT {}
+.TkXSTRING {}
+.TkREGEXP {}
+.TkDSTRING {}
+.TkDXSTRING {}
+.TkDREGEXP {}
+.TkNTH-REF {}
+.TkBACK-REF {}
+.TkUPLUS {}
+.TkUMINUS {}
+.TkPOW {}
+.TkCMP {}
+.TkEQ {}
+.TkEQQ {}
+.TkNEQ {}
+.TkGEQ {}
+.TkLEQ {}
+.TkANDOP {}
+.TkOROP {}
+.TkMATCH {}
+.TkNMATCH {}
+.TkDOT2 {}
+.TkDOT3 {}
+.TkAREF {}
+.TkASET {}
+.TkLSHFT {}
+.TkRSHFT {}
+.TkCOLON2 {}
+.TkCOLON3 {}
+.TkASSOC {}
+.TkQUESTION {}
+.TkCOLON {}
+.TkfLPAREN {}
+.TkfLBRACK {}
+.TkfLBRACE {}
+.TkSTAR {}
+.TkAMPER {}
+.TkSYMBEG {}
+.TkGT {}
+.TkLT {}
+.TkPLUS {}
+.TkMINUS {}
+.TkMULT {}
+.TkDIV {}
+.TkMOD {}
+.TkBITOR {}
+.TkBITXOR {}
+.TkBITAND {}
+.TkBITNOT {}
+.TkNOTOP {}
+.TkBACKQUOTE {}
+.TkASSGIN {}
+.TkDOT {}
+.TkLPAREN {}
+.TkLBRACK {}
+.TkLBRACE {}
+.TkRPAREN {}
+.TkRBRACK {}
+.TkRBRACE {}
+.TkCOMMA {}
+.TkSEMICOLON {}
+.TkSPACE {}
+.TkNL {}
+.TkEND-OF-SCRIPT {}
+.TkBACKSLASH {}
+.TkAT {}
+.TkDOLLAR {}
+
+
+
+/* for attach_html */
+.html_linenumber {
+	color : #aaa;
+}
+.html_webtemplate {
+  color : #00a;
+}
+.html_erb {
+	color : #339933;
+}
+.html_tag {
+  color : #a50;
+}
+.html_tag_block {
+ color : #a00;
+}
+.html_comment {
+	color : #0a0;
+}
+
+/* hide sanchor */
+/*
+div.day span.sanchor {
+	display: none;
+}
+*/
+div.note {
+	text-align: right;
+	font-size: small;
+	margin-bottom: 0.5em;
+}
+
+/* from append-css */
+div.preview {
+  font-size: medium;
+  background-color: #fcc;
+  padding-top: 0.5em;
+}
+div.main p img.right {
+  float: right;
+}
+ins.added {
+  background-color: #fbb;
+}
+del.deleted {
+  background-color: #ccc;
+}
+div.sidebar input[type=text] {
+  width:123px;
+}
