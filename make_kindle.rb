@@ -1,5 +1,6 @@
 require 'rubima'
 require 'kindle'
+require 'cgi'
 require 'pp'
 
 def make_nav(title, file, children)
@@ -12,19 +13,23 @@ end
 
 def make_kindle(vol)
 
-  #top_file = Dir.glob('kindle/????html')
   top_file = [ "kindle/#{vol}.html" ]
   spine_files = []
   nav_items = []
   
   top_file.each do |file|
     title, link = Rubima.get_link(file)
-    puts title, link
     spine_files << File.basename(file)
-    link.each { |lnk| spine_files << lnk.link }
+    link.each do |lk|
+      link_file = CGI.unescape(lk.link)
+      unless File.exist?('kindle/' + link_file)
+        link_file += '.html' 
+        raise "#{lk.link} not found" unless File.exist?('kindle/' + link_file)
+        lk.link = link_file
+      end
+      spine_files << link_file
+    end
     nav_items << make_nav(title, File.basename(file), link)
-    puts file
-    break if file =~ /0010/
   end
   
   #puts spine_files
@@ -40,8 +45,8 @@ def make_kindle(vol)
     ids << item.id
   end
   
-  files = Dir.glob("kindle/#{vol}.*")
-  files += Dir.glob('kindle/theme/**/*')
+  files = Dir.glob("kindle/#{vol}*.*")
+  files += Dir.glob('kindle/theme/**/*').delete_if { |f| File.directory?(f) }
 =begin
   files = Dir.glob('kindle/**/*')
              .delete_if do |f|

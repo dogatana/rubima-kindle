@@ -3,22 +3,16 @@ require 'cgi'
 require 'pp'
 
 module Rubima
-  
-=begin
-  def get_index
-    xml = open('index.html@c=index', 'r:utf-8', &:read)
-    doc = Nokogiri::HTML.parse(xml)
-    
-    index = []
-    doc.xpath('//ul[last()-1]').each do |node|
-      node.xpath('li/a').each do |tag|
-        file = tag['href']
-        index << file if file =~ /^index.html@\d+/
-      end
-    end
-    index.sort
+
+  SKIP_FILE = /\.(zip|pdf|xls|mdb|csv|aia|gz|ckd)$/i 
+  def skip_file?(file)
+    file =~ SKIP_FILE
   end
-=end
+
+  def html_file?(file)
+    data = open(file, 'rb').read(16)
+    data =~ /^<!DOCTYPE/
+  end
 
   def convert_name(name, escape)
     return name unless name =~ /^index.html/
@@ -44,11 +38,29 @@ module Rubima
     doc.xpath('//h3').each do |node|
       text = node.text.tr("\u3000", ' ').strip
       atag = node.xpath('a[@href]')[0]
-      link << Link.new(text, atag['href']) if atag
+      if atag && atag['href'] !~ /^http/
+        link << Link.new(text, atag['href'])
+      end
     end
     [doc.xpath('//h1')[0].text, link]
   end
-  
+
+  def unlink_tag(doc)
+    # amazon書籍のサムネイル画像
+    doc.xpath('//img[@src]').each do |node|
+      link = node['src']
+      node.unlink if link =~ %r|^http://ecx.images-amazon.com/|
+    end
+    # リンクを削除し、テキストのみ残す
+    doc.xpath('//a[@href]').each do |node|
+      link = node['href']
+      if link =~ SKIP_FILE
+        node.after node.text
+        node.unlink
+      end
+    end
+  end
+
   def fix_file(file)
     html = ''
     File.open(file, 'r:utf-8') do |f|
@@ -56,7 +68,11 @@ module Rubima
       f.close
     end
     doc = Nokogiri::HTML.parse(html)
-    
+
+    title = doc.xpath('//title')[0]
+    if title && title.text.strip =~ / - Error$/
+      return nil
+    end
     # fix header and ohters
     paths = %w(
       /html/head/meta[@http-equiv="Content-Script-Type"]
@@ -66,14 +82,14 @@ module Rubima
       /html/head/style
       //script).join('|')
     doc.xpath(paths).each { |node| node.unlink }
-    
+
     doc.xpath('//img[@alt="u26.gif"]').each do |img|
       img.attribute('alt').unlink
       # img['src'] = 'u26.gif'
     end
-    
+
     footnote = doc.xpath('//div[@class="footnote"]')
-    
+
     # fix main part
     main = doc.xpath('/html/body/div/div[@class="contents"]/div[@class="main"]')
     paths = %w(
@@ -85,16 +101,16 @@ module Rubima
     # 最終 div は (あれば）脚注のみとする
     main.xpath(paths).each { |node| node.unlink }
     main.push(footnote[0]) unless footnote.empty?
-    
+
     # おねがい以降を削除
     delete_flag = false
     main.xpath('//div[@class="section"]/*').each do |node|
      delete_flag = true if node.name == 'h3' && node.text.strip == 'おねがい'
      node.unlink if delete_flag
     end
-    
-    #pp get_h3links(main)
-  
+
+    unlink_tag(doc)
+
     # replace main part
     doc.xpath('/html/body/*').each { |node| node.unlink }
     doc.xpath('/html/body')[0].add_child(main)
@@ -109,5 +125,6 @@ module Rubima
     doc.to_html.gsub(/^\s+$/, '').gsub(/\n+/, "\n")
   end
 
-  module_function :get_link, :convert_name, :fix_file
+  module_function :get_link, :unlink_tag, :convert_name, :fix_file
+  module_function :html_file?, :skip_file?
 end
