@@ -13,7 +13,11 @@ end
 
 def make_kindle(vol)
 
-  top_file = [ "kindle/#{vol}.html" ]
+  if vol == 'all'
+    top_file = (1..54).map { |x| "kindle/%04d.html" % x }
+  else
+    top_file = [ "kindle/#{vol}.html" ]
+  end
   spine_files = []
   nav_items = []
   
