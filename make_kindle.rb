@@ -21,9 +21,14 @@ def make_kindle(vol)
   spine_files = []
   nav_items = []
   
+  # top_fileが2つ以上の場合Rubyの歩き方は末尾に移動する削除するか
+  delete_firststep = top_file.size > 1
   top_file.each do |file|
     title, link = Rubima.get_link(file)
     spine_files << File.basename(file)
+    if delete_firststep
+      link = link.delete_if { |l| l.link == 'FirstStepRuby.html' }
+    end
     link.each do |lk|
       link_file = CGI.unescape(lk.link)
       unless File.exist?('kindle/' + link_file)
@@ -35,7 +40,9 @@ def make_kindle(vol)
     end
     nav_items << make_nav(title, File.basename(file), link)
   end
-  
+  if delete_firststep
+    nav_items << Kindle::NavElement.new('Ruby の歩き方', 'FirstStepRuby.html')
+  end
   #puts spine_files
   #pp nav_items[0]
   
