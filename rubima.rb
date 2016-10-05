@@ -21,7 +21,9 @@ module Rubima
     new_base = base.sub(/^index\.html@/, '')
                    .gsub(/(c=login|c=plugin;plugin=attach_download);p=/, '')
                    .sub(/;file_name=/, '_')
-    new_base += ".html" if File.extname(new_base).empty?
+    if new_base == '0006-CGIKit-2.x' || File.extname(new_base).empty?
+      new_base += ".html"
+    end
     new_base += '#' + id if id 
     new_base
   end
@@ -39,7 +41,7 @@ module Rubima
       text = node.text.tr("\u3000", ' ').strip
       atag = node.xpath('a[@href]')[0]
       if atag && atag['href'] !~ /^http/
-        link << Link.new(text, atag['href'])
+        link << Link.new(text, convert_name(atag['href'], false))
       end
     end
     [doc.xpath('//h1')[0].text, link]
