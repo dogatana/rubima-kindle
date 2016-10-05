@@ -297,6 +297,7 @@ div.main pre {
 	margin-left: 2em;
 	padding: 4px;
 	clear : both;
+	font-size: small;
 }
 
 div.main blockquote {
@@ -336,7 +337,8 @@ span.corres {
 
 div.main span.footnote a {
 /*	vertical-align: super;*/
-	font-size: x-small;
+	/* font-size: x-small; */
+	font-size: small;
 	text-decoration: none;
 }
 
