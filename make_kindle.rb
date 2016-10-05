@@ -44,6 +44,8 @@ def make_kindle(vol)
   items = []
   ids   = []
   spine_files.each do |file|
+    id = Kindle::BookItem.get_id(file)
+    next if id
     item = Kindle::BookItem.new(file)
     items << item
     ids << item.id
