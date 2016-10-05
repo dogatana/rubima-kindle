@@ -42,6 +42,7 @@ def make_kindle(vol)
   end
   if delete_firststep
     nav_items << Kindle::NavElement.new('Ruby の歩き方', 'FirstStepRuby.html')
+    spine_files << 'FirstStepRuby.html'
   end
   #puts spine_files
   #pp nav_items[0]
@@ -58,8 +59,15 @@ def make_kindle(vol)
     ids << item.id
   end
   
-  files = Dir.glob("kindle/#{vol}*.*")
+  files = if vol == 'all'
+            Dir.glob("kindle/0*.*")
+          else
+            Dir.glob("kindle/#{vol}*.*")
+          end
   files += Dir.glob('kindle/theme/**/*').delete_if { |f| File.directory?(f) }
+  files -= %w(
+    0047-SpecialInterviewKosaki.html
+  )
 =begin
   files = Dir.glob('kindle/**/*')
              .delete_if do |f|
