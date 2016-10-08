@@ -57,6 +57,9 @@ end
 # convert link to valid filename
 def get_name(link)
   link.sub(%r|^(\./)?\?|, '')
+       .sub(/c=plugin;plugin=attach_download;/, '')
+       .sub(/file_name=/, 'f=')
+       .gsub(/;/, '_')
 end
 
 # load additional file
