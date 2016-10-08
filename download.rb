@@ -12,6 +12,7 @@ def load_file(target)
       puts "# load local #{file}"
       data = open(file, 'rb', &:read)
     else
+      p target
       puts "# load net #{HOME}/#{target}"
       data = open("#{HOME}/#{target}", 'rb', &:read)
       sleep 0.5
@@ -19,7 +20,8 @@ def load_file(target)
   rescue
     puts $!
     data = ''
-  end
+ end
+  data
 end
 
 # retrieve links from index.html
@@ -57,6 +59,21 @@ def get_name(link)
   link.sub(%r|^(\./)?\?|, '')
 end
 
+# load additional file
+def load_additional
+  %w(hiki_base.css
+     rubima/rubima.css
+     rubima/rubima_logo_l.png
+     rubima/rubima_logo_left.png
+     rubima/rubima_sidebar.png).each do |target|
+    file = 'theme/' + target
+    unless File.exist?(file)
+      data = load_file(file)
+      open(file, 'wb').write(data)
+    end
+  end
+end
+
 # == start of main
 rest = load_index
 done = { 'index.html' => '' }
@@ -90,3 +107,5 @@ until rest.empty?
   end
   done[target] = item
 end
+
+load_additional
