@@ -14,7 +14,7 @@ until rest.empty?
   
   puts "# process #{target}"
   
-  data = Rubima::DL.load_file(target)
+  data = Rubima::DL::load_file(target)
   file = Rubima.get_name(target)
   
   # save it
@@ -27,7 +27,7 @@ until rest.empty?
   # parse it if it's html
   if data =~ /^<!DOCTYPE/
     puts "# parse #{file}"
-    links = Rubima.parse_ref(data)
+    links = Rubima::DL::parse_ref(data)
     puts "# got #{links.size} links"
     rest.merge!(links)
   end
