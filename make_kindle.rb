@@ -11,40 +11,18 @@ def make_nav(title, file, children)
   Kindle::NavElement.new(title, file, sub)
 end
 
-def make_kindle(vol)
-  spine_files = []
-  nav_items = []
+def make_kindle(tops)
+  spine_files = tops.dup
   
-  # top_fileが2つ以上の場合Rubyの歩き方は末尾に移動する削除するか
-  if vol == 'all'
-    top_file = (1..54).map { |x| "%04d.html" % x }
-    delete_firststep = true
-    spine_files << 'index.html'
-  else
-    top_file = [ "#{vol}.html" ]
-    delete_firststep = false
-  end
-  
-  top_file.each do |file|
-    title, links = Rubima.get_toplink(file)
-    pp title
-    pp links
-    spine_files << file
-    if delete_firststep
-      links = links.delete_if { |link| link.link == 'FirstStepRuby.html' }
-    end
+  tops.each do |file|
+    p file
+    _, links = Rubima.get_toplink(file)
     links.each do |link|
       spine_files << link.link
     end
-    nav_items << make_nav(title, file, links)
   end
-  if delete_firststep
-    nav_items << Kindle::NavElement.new('Ruby の歩き方', 'FirstStepRuby.html')
-    spine_files << 'FirstStepRuby.html'
-  end
-  puts spine_files
-  Kindle::Nav.new('ja', nav_items).write('nav.xhtml')
-
+  spine_files.unshift 'kindle_index.html'
+  
   items = []
   ids   = []
   spine_files.each do |file|
@@ -68,6 +46,60 @@ def make_kindle(vol)
   Kindle::Opf.new(info, items, ids).write('rubima.opf')
 end
 
-exit if ARGV.empty?
-vol = ARGV[0]
-make_kindle(vol)
+def make_navitems
+  items = []
+  top = Rubima::DL::get_master_index('index.html')
+  top.keys.reverse.each do |file|
+    title, links = Rubima::get_toplink(file)
+    links.delete_if { |x| x.link == 'FirstStepRuby.html' }
+    sub_items = links.inject([]) do |a, e|
+                  a << Kindle::NavElement.new(e.title.strip, e.link)
+                end
+    items << Kindle::NavElement.new(title, file, sub_items)
+  end
+  items << Kindle::NavElement.new('Rubyの歩き方', 'FirstStepRuby.html')
+  items
+end
+
+def make_index(file, items)
+  html = Nokogiri::HTML::Builder.new(encoding: 'utf-8') do |doc|
+    doc.html(lang: 'ja') do
+      doc.head do
+        doc.title('目次')
+      end
+      doc.body do 
+        doc.h1('目次')
+        doc.ul do
+          items.each do |item|
+            doc.li do
+              doc.a(item.title, href: item.file)
+              unless item.children.empty?
+                doc.ul do
+                  item.children.each do |sub_item|
+                    doc.li { doc.a(sub_item.title, href: sub_item.file) }
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+  open(file, 'w:utf-8').write(html.to_html)
+end
+
+def make_spine(items)
+  spines = []
+  items.each do |item|
+    spines << item.file
+    item.children.each { |sub| spines << sub.file }
+  end
+  spines
+end
+
+nav_items = make_navitems
+Kindle::Nav.new('ja', nav_items).write('nav.xhtml')
+make_index('kindle_index.html', nav_items)
+spines = make_spine(nav_items)
+make_kindle(spines)
