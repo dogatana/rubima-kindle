@@ -12,43 +12,39 @@ def make_nav(title, file, children)
 end
 
 def make_kindle(vol)
-
-  if vol == 'all'
-    top_file = (1..54).map { |x| "kindle/%04d.html" % x }
-  else
-    top_file = [ "kindle/#{vol}.html" ]
-  end
   spine_files = []
   nav_items = []
   
   # top_fileが2つ以上の場合Rubyの歩き方は末尾に移動する削除するか
-  delete_firststep = top_file.size > 1
+  if vol == 'all'
+    top_file = (1..54).map { |x| "%04d.html" % x }
+    delete_firststep = true
+    spine_files << 'index.html'
+  else
+    top_file = [ "#{vol}.html" ]
+    delete_firststep = false
+  end
+  
   top_file.each do |file|
-    title, link = Rubima.get_link(file)
-    spine_files << File.basename(file)
+    title, links = Rubima.get_toplink(file)
+    pp title
+    pp links
+    spine_files << file
     if delete_firststep
-      link = link.delete_if { |l| l.link == 'FirstStepRuby.html' }
+      links = links.delete_if { |link| link.link == 'FirstStepRuby.html' }
     end
-    link.each do |lk|
-      link_file = CGI.unescape(lk.link)
-      unless File.exist?('kindle/' + link_file)
-        link_file += '.html' 
-        raise "#{lk.link} not found" unless File.exist?('kindle/' + link_file)
-        lk.link = link_file
-      end
-      spine_files << link_file
+    links.each do |link|
+      spine_files << link.link
     end
-    nav_items << make_nav(title, File.basename(file), link)
+    nav_items << make_nav(title, file, links)
   end
   if delete_firststep
     nav_items << Kindle::NavElement.new('Ruby の歩き方', 'FirstStepRuby.html')
     spine_files << 'FirstStepRuby.html'
   end
-  #puts spine_files
-  #pp nav_items[0]
-  
-  Kindle::Nav.new('ja', nav_items).write('kindle/nav.xhtml')
-  
+  puts spine_files
+  Kindle::Nav.new('ja', nav_items).write('nav.xhtml')
+
   items = []
   ids   = []
   spine_files.each do |file|
@@ -59,36 +55,17 @@ def make_kindle(vol)
     ids << item.id
   end
   
-  files = if vol == 'all'
-            Dir.glob("kindle/0*.*")
-          else
-            Dir.glob("kindle/#{vol}*.*")
-          end
-  files += Dir.glob('kindle/theme/**/*').delete_if { |f| File.directory?(f) }
-  files -= %w(
-    0047-SpecialInterviewKosaki.html
-  )
-=begin
-  files = Dir.glob('kindle/**/*')
-             .delete_if do |f|
-                File.directory?(f) ||
-                f =~ /(zip|xls|gz|ckd|mdb|x|pdf|aia|Brushup|Preview)$/
-              end
-             .map { |f| f.sub(/^kindle\//, '') }
-=end
-  files = files.map { |f| f.sub(/^kindle\//, '') }
-  puts files
-  
-  files -= spine_files + ['rubima.opf', 'rubima.mobi', 'cover.png', 'nav.xhtml']
-  # puts files
-  files.each { |file| items << Kindle::BookItem.new(file) }
-  
+  files = Rubima::parse_filelink(spine_files)
+  files.delete(nil)
+  files.each do |file|
+    items << Kindle::BookItem.new(file)
+  end
   info = Kindle::BookInfo.new(
     'Rubist Magazin for for Kindle',
     'るびま 創刊号',
     'ja', 'cover.png', '00000000')
   
-  Kindle::Opf.new(info, items, ids).write('kindle/rubima.opf')
+  Kindle::Opf.new(info, items, ids).write('rubima.opf')
 end
 
 exit if ARGV.empty?
