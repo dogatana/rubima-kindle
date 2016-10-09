@@ -13,6 +13,7 @@ Dir.glob('*').each do |file|
 end
 
 filename_table.each do |file, new_file|
+  next if file =~ /^prep?\-/
   puts "# processing #{file}"
   if new_file =~ /\.html$/i
     html = open(file, 'r:utf-8', &:read)
