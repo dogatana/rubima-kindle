@@ -1,20 +1,98 @@
 require 'nokogiri'
+require 'open-uri'
 require 'cgi'
 require 'pp'
 
 module Rubima
+  RUBIMA_HOME = 'http://magazine.rubyist.net'
+  REJECT_REF = /^(http|ftp|mailto|file|\/\/)/
 
+  Link = Struct.new(:title, :link, :file)
+
+  module DL
+    # load taregt from local file or rubima site
+    def self.load_file(target)
+      file = Rubima::get_name(target)
+      begin
+        if File.exist?(file)
+          puts "# load(local) #{file}"
+          data = open(file, 'rb', &:read)
+        else
+          puts "# load(net) #{RUBIMA_HOME}/#{target}"
+          data = open("#{RUBIMA_HOME}/#{target}", 'rb', &:read)
+          sleep 0.5
+        end
+      rescue
+        puts $!
+        data = ''
+     end
+      data
+    end
+    
+    # retrieve links from index.html
+    def self.get_master_index(file)
+      html = load_file(file)
+      doc = Nokogiri::HTML.parse(html)
+      open(file, 'wb').write(html) unless File.exist?(file)
+      
+      links = {}
+      doc.xpath('//div[@class="body"]/div[@class="section"]/ul[1]/li/a').each do |node|
+        ref = node['href']
+        links[ref] = Link.new(ref, node.text)
+      end
+      links
+    end
+  
+    # load additional file
+    def self.load_additional_file
+      %w(hiki_base.css
+         rubima/rubima.css
+         rubima/rubima_logo_l.png
+         rubima/rubima_logo_left.png
+         rubima/rubima_sidebar.png).each do |target|
+        file = 'theme/' + target
+        unless File.exist?(file)
+          data = load_file(file)
+          open(file, 'wb').write(data)
+        end
+      end
+    end
+  end
+  
+  # retrieve <a> and <img> from html data
+  def self.parse_ref(data)
+    links = {}
+    doc = Nokogiri::HTML.parse(data)
+    %w(a href img src).each_slice(2) do |tag, attr|
+      doc.xpath("//#{tag}[@#{attr}]").each do |node|
+        ref = node[attr]
+        unless ref =~ REJECT_REF
+          links[ref] = Link.new(ref, node.text)
+        end
+      end
+    end
+    links
+  end
+  
+  # convert link to valid filename
+  def self.get_name(link)
+    link.sub(%r|^(\./)?\?|, '')
+         .sub(/c=plugin;plugin=attach_download;/, '')
+         .sub(/file_name=/, 'f=')
+         .gsub(/;/, '_')
+  end
+  
   SKIP_FILE = /\.(zip|pdf|xls|mdb|csv|aia|gz|ckd)$/i 
-  def skip_file?(file)
+  def self.skip_file?(file)
     file =~ SKIP_FILE
   end
 
-  def html_file?(file)
+  def self.html_file?(file)
     data = open(file, 'rb').read(16)
     data =~ /^<!DOCTYPE/
   end
 
-  def convert_name(name, escape)
+  def self.convert_name(name, escape)
     return name unless name =~ /^index.html/
     name = CGI.unescape(name) if escape
     base, id = name.split(/#/)
@@ -28,8 +106,7 @@ module Rubima
     new_base
   end
 
-  Link = Struct.new(:title, :link)
-  def get_link(file)
+  def self.get_link(file)
     html = ''
     File.open(file, 'r:utf-8') do |f|
       html = f.read
@@ -47,7 +124,7 @@ module Rubima
     [doc.xpath('//h1')[0].text, link]
   end
 
-  def unlink_tag(doc)
+  def self.unlink_tag(doc)
     # amazon書籍のサムネイル画像
     doc.xpath('//img[@src]').each do |node|
       link = node['src']
@@ -63,7 +140,7 @@ module Rubima
     end
   end
 
-  def fix_file(file)
+  def self.fix_file(file)
     html = ''
     File.open(file, 'r:utf-8') do |f|
       html = f.read
@@ -80,7 +157,7 @@ module Rubima
       /html/head/meta[@http-equiv="Content-Script-Type"]
       /html/head/link[@rel="alternate"]
       /html/head/link[@rel="icon"]
-      /html/head/link[@href="favicon.ico"]
+      /html/head/link[@href="/favicon.ico"]
       /html/head/style
       //script).join('|')
     doc.xpath(paths).each { |node| node.unlink }
@@ -126,7 +203,4 @@ module Rubima
     end
     doc.to_html.gsub(/^\s+$/, '').gsub(/\n+/, "\n")
   end
-
-  module_function :get_link, :unlink_tag, :convert_name, :fix_file
-  module_function :html_file?, :skip_file?
 end
