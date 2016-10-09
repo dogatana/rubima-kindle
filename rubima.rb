@@ -11,6 +11,21 @@ module Rubima
   Link = Struct.new(:title, :link, :file)
 
   module DL
+    # retrieve <a> and <img> from html data
+    def self.parse_ref(data)
+      links = {}
+      doc = Nokogiri::HTML.parse(data)
+      %w(a href img src).each_slice(2) do |tag, attr|
+        doc.xpath("//#{tag}[@#{attr}]").each do |node|
+          ref = node[attr]
+          unless ref =~ REJECT_REF
+            links[ref] = Link.new(ref, node.text)
+          end
+        end
+      end
+      links
+    end
+
     # load taregt from local file or rubima site
     def self.load_file(target)
       file = Rubima::get_name(target)
@@ -91,6 +106,7 @@ module Rubima
         div[@class="adminmenu"]
         div/div[@class="social-buttons"]
         //div[@class="sidebar"]
+        //div[@class="comment"]
         div[last()]
         ).join('|')
       main.xpath(paths).each { |node| node.unlink }
@@ -162,20 +178,6 @@ module Rubima
     end
   end
   
-  # retrieve <a> and <img> from html data
-  def self.parse_ref(data)
-    links = {}
-    doc = Nokogiri::HTML.parse(data)
-    %w(a href img src).each_slice(2) do |tag, attr|
-      doc.xpath("//#{tag}[@#{attr}]").each do |node|
-        ref = node[attr]
-        unless ref =~ REJECT_REF
-          links[ref] = Link.new(ref, node.text)
-        end
-      end
-    end
-    links
-  end
   
   # convert link to valid filename
   def self.get_name(link)
@@ -194,35 +196,44 @@ module Rubima
     data =~ /^<!DOCTYPE/
   end
 
-  def self.convert_name(name, escape)
-    return name unless name =~ /^index.html/
-    name = CGI.unescape(name) if escape
-    base, id = name.split(/#/)
-    new_base = base.sub(/^index\.html@/, '')
-                   .gsub(/(c=login|c=plugin;plugin=attach_download);p=/, '')
-                   .sub(/;file_name=/, '_')
-    if new_base == '0006-CGIKit-2.x' || File.extname(new_base).empty?
-      new_base += ".html"
-    end
-    new_base += '#' + id if id 
-    new_base
-  end
-
-  def self.get_link(file)
-    html = ''
-    File.open(file, 'r:utf-8') do |f|
-      html = f.read
-      f.close
-    end
+  def self.get_toplink(file)
+    html = open(file, 'r:utf-8', &:read)
     doc = Nokogiri::HTML.parse(html)
     link = []
     doc.xpath('//h3').each do |node|
-      text = node.text.tr("\u3000", ' ').strip
-      atag = node.xpath('a[@href]')[0]
-      if atag && atag['href'] !~ /^http/
-        link << Link.new(text, convert_name(atag['href'], false))
+      text = node.text.tr("\u3000", ' ')
+      node.xpath('a[@href]').each do |tag|
+        ref = tag['href']
+        link << Link.new(text, ref) unless ref =~ REJECT_REF
       end
     end
     [doc.xpath('//h1')[0].text, link]
+  end
+
+  def self.parse_filelink(files)
+    links = []
+    done = {}
+    rest = files.dup
+    until rest.empty?
+      file = rest.shift
+      next if done[file]
+      done[file] = true
+      next unless file =~ /\.html$/i
+      puts file
+      html = open(file, 'r:utf-8', &:read)
+      doc = Nokogiri::HTML.parse(html)
+      %w(a href img src).each_slice(2) do |tag, attr|
+        doc.xpath("//#{tag}[@#{attr}]").each do |node|
+          ref, id = node[attr].split(/#/)
+          next if !ref || ref.empty?
+          if ref !~ REJECT_REF && !done[done]
+            puts "# #{ref.inspect}"
+            links << ref
+            rest << ref 
+          end
+        end
+      end
+    end
+    links.uniq
   end
 end
