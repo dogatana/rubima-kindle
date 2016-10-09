@@ -1,7 +1,25 @@
 require 'rubima'
 require 'fileutils'
+require 'forwardable'
 
-filename_table = {}
+class FileTable
+  extend Forwardable
+  def_delegators :@hash, :keys, :each
+  
+  def initialize
+    @hash = {}
+  end
+  
+  def [](key)
+    @hash[key.downcase]
+  end
+  
+  def []=(key, val)
+    @hash[key.downcase] = val
+  end
+end
+
+filename_table = FileTable.new
 
 Dir.glob('*').each do |file|
   next unless File.file?(file)
@@ -11,6 +29,11 @@ Dir.glob('*').each do |file|
   end
   filename_table[file] = new_file
 end
+
+#filename_table.keys.grep(/0048/).each do |key|
+#  puts "#{key} -> #{filename_table[key]}"
+#end
+#exit
 
 filename_table.each do |file, new_file|
   next if file =~ /^prep?\-/
