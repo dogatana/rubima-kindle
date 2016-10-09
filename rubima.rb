@@ -199,15 +199,15 @@ module Rubima
   def self.get_toplink(file)
     html = open(file, 'r:utf-8', &:read)
     doc = Nokogiri::HTML.parse(html)
-    link = []
+    links = []
     doc.xpath('//h3').each do |node|
       text = node.text.tr("\u3000", ' ')
       node.xpath('a[@href]').each do |tag|
         ref = tag['href']
-        link << Link.new(text, ref) unless ref =~ REJECT_REF
+        links << Link.new(text, ref) unless ref =~ REJECT_REF
       end
     end
-    [doc.xpath('//h1')[0].text, link]
+    [doc.xpath('//h1')[0].text, links]
   end
 
   def self.parse_filelink(files)
