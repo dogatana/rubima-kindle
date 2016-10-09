@@ -6,6 +6,7 @@ require 'pp'
 module Rubima
   RUBIMA_HOME = 'http://magazine.rubyist.net'
   REJECT_REF = /^(http|ftp|mailto|file|\/\/)/
+  SKIP_FILE = /\.(zip|pdf|xls|mdb|csv|aia|gz|ckd)$/i 
 
   Link = Struct.new(:title, :link, :file)
 
@@ -59,6 +60,108 @@ module Rubima
     end
   end
   
+  module Setup
+    def self.unescape_name(name)
+      ret = name
+      if name =~ /%\h\h/
+        ret = name.gsub(/(%\h\h)+/) do |str|
+          s = str[1..-1].split(/%/).map(&:hex).pack('c*')
+          s.force_encoding('utf-8')
+        end
+      end
+      ret
+    end
+    
+    def self.fix_header(doc)
+      paths = %w(
+        /html/head/meta[@http-equiv="Content-Script-Type"]
+        /html/head/link[@rel="alternate"]
+        /html/head/link[@rel="icon"]
+        /html/head/link[@href="/favicon.ico"]
+        /html/head/style
+        //script).join('|')
+      doc.xpath(paths).each { |node| node.unlink }
+    end
+    
+    def self.fix_main(doc)
+      footnote = doc.xpath('//div[@class="footnote"]')
+      main = doc.xpath('/html/body/div/div[@class="contents"]/div[@class="main"]')
+      
+      paths = %w(
+        div[@class="adminmenu"]
+        div/div[@class="social-buttons"]
+        //div[@class="sidebar"]
+        div[last()]
+        ).join('|')
+      main.xpath(paths).each { |node| node.unlink }
+      main.push(footnote[0]) unless footnote.empty?
+    
+      # おねがい以降を削除
+      delete_flag = false
+      main.xpath('//div[@class="section"]/*').each do |node|
+        delete_flag = true if node.name == 'h3' && node.text.strip == 'おねがい'
+        node.unlink if delete_flag
+      end
+    
+      # replace main part
+      doc.xpath('/html/body/*').each { |node| node.unlink }
+      doc.xpath('/html/body')[0].add_child(main)
+    end
+    
+    def self.modify_link(doc)
+      # amazon書籍のサムネイル画像
+      doc.xpath('//img[@src]').each do |node|
+        link = node['src']
+        node.unlink if link =~ %r|^http://ecx.images-amazon.com/|
+      end
+      # リンクを削除し、テキストのみ残す
+      doc.xpath('//a[@href]').each do |node|
+        link = node['href']
+        if link =~ SKIP_FILE
+          node.after node.text
+          node.unlink
+        end
+      end
+    end
+    
+    def self.replace_link(doc, filename_table)
+      reject = /^(http|ftp|mailto|file|\/\/)/
+      doc.xpath('//a[@href]').each do |node|
+        link = node['href']
+        next if link =~ reject || link[0] == '#'
+        ref, id = link.split(/#/)
+        file = filename_table[Rubima::get_name(ref)]
+        file += '#' + id if id
+        unless link == file
+          node['href'] = file
+          # puts "#{link} -> #{file}"
+        end
+      end
+      doc.xpath('//img[@src]').each do |node|
+        link = node['src']
+        next if link =~ reject
+        file = filename_table[Rubima::get_name(link)]
+        unless link == file
+          node['src'] = file 
+          # puts "#{link} -> #{file}"
+        end
+      end
+    end
+    
+    def self.fix_html(html, filename_table)
+      doc = Nokogiri::HTML.parse(html)
+      
+      fix_header(doc)
+      fix_main(doc)
+      
+      # replace link
+      modify_link(doc)
+      replace_link(doc, filename_table)
+    
+      doc.to_html
+    end
+  end
+  
   # retrieve <a> and <img> from html data
   def self.parse_ref(data)
     links = {}
@@ -82,7 +185,6 @@ module Rubima
          .gsub(/;/, '_')
   end
   
-  SKIP_FILE = /\.(zip|pdf|xls|mdb|csv|aia|gz|ckd)$/i 
   def self.skip_file?(file)
     file =~ SKIP_FILE
   end
@@ -122,85 +224,5 @@ module Rubima
       end
     end
     [doc.xpath('//h1')[0].text, link]
-  end
-
-  def self.unlink_tag(doc)
-    # amazon書籍のサムネイル画像
-    doc.xpath('//img[@src]').each do |node|
-      link = node['src']
-      node.unlink if link =~ %r|^http://ecx.images-amazon.com/|
-    end
-    # リンクを削除し、テキストのみ残す
-    doc.xpath('//a[@href]').each do |node|
-      link = node['href']
-      if link =~ SKIP_FILE
-        node.after node.text
-        node.unlink
-      end
-    end
-  end
-
-  def self.fix_file(file)
-    html = ''
-    File.open(file, 'r:utf-8') do |f|
-      html = f.read
-      f.close
-    end
-    doc = Nokogiri::HTML.parse(html)
-
-    title = doc.xpath('//title')[0]
-    if title && title.text.strip =~ / - Error$/
-      return nil
-    end
-    # fix header and ohters
-    paths = %w(
-      /html/head/meta[@http-equiv="Content-Script-Type"]
-      /html/head/link[@rel="alternate"]
-      /html/head/link[@rel="icon"]
-      /html/head/link[@href="/favicon.ico"]
-      /html/head/style
-      //script).join('|')
-    doc.xpath(paths).each { |node| node.unlink }
-
-    doc.xpath('//img[@alt="u26.gif"]').each do |img|
-      img.attribute('alt').unlink
-      # img['src'] = 'u26.gif'
-    end
-
-    footnote = doc.xpath('//div[@class="footnote"]')
-
-    # fix main part
-    main = doc.xpath('/html/body/div/div[@class="contents"]/div[@class="main"]')
-    paths = %w(
-      div[@class="adminmenu"]
-      div/div[@class="social-buttons"]
-      //div[@class="sidebar"]
-      div[last()]
-      ).join('|')
-    # 最終 div は (あれば）脚注のみとする
-    main.xpath(paths).each { |node| node.unlink }
-    main.push(footnote[0]) unless footnote.empty?
-
-    # おねがい以降を削除
-    delete_flag = false
-    main.xpath('//div[@class="section"]/*').each do |node|
-     delete_flag = true if node.name == 'h3' && node.text.strip == 'おねがい'
-     node.unlink if delete_flag
-    end
-
-    unlink_tag(doc)
-
-    # replace main part
-    doc.xpath('/html/body/*').each { |node| node.unlink }
-    doc.xpath('/html/body')[0].add_child(main)
-    doc.xpath('//a[@href]').each do |node|
-      link = node['href']
-      node['href'] = convert_name(link, true)
-    end
-    doc.xpath('//img[@src]').each do |node|
-      link = node['src']
-      node['src'] = convert_name(link, true)
-    end
-    doc.to_html.gsub(/^\s+$/, '').gsub(/\n+/, "\n")
   end
 end
