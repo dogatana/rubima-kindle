@@ -82,9 +82,10 @@ module Rubima
         ret = name.gsub(/(%\h\h)+/) do |str|
           s = str[1..-1].split(/%/).map(&:hex).pack('c*')
           s.force_encoding('utf-8')
+          s.gsub(/\+/, '_')
         end
       end
-      ret
+      ret.tr('+ ', '_')
     end
     
     def self.fix_header(doc)
@@ -94,7 +95,9 @@ module Rubima
         /html/head/link[@rel="icon"]
         /html/head/link[@href="/favicon.ico"]
         /html/head/style
-        //script).join('|')
+        //script
+        //embed
+        //object).join('|')
       doc.xpath(paths).each { |node| node.unlink }
     end
     
