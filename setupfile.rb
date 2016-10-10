@@ -49,3 +49,4 @@ end
 
 FileUtils.cp_r('theme', '../fixed')
 FileUtils.cp('../rubima.css', '../fixed/theme/rubima')
+FileUtils.cp('theme/rubima/rubima_logo_l.png', '../fixed/cover.png')
