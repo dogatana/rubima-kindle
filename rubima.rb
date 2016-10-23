@@ -5,14 +5,15 @@ require 'pp'
 
 module Rubima
   RUBIMA_HOME = 'http://magazine.rubyist.net'
-  REJECT_REF = /^(http|ftp|mailto|file|\/\/)/
-  SKIP_FILE = /\.(zip|pdf|xls|mdb|csv|aia|gz|ckd)$/i 
+  REJECT_REF  = /^(http|ftp|mailto|file|\/\/)/
+  SKIP_FILE   = /\.(zip|pdf|xls|mdb|csv|aia|gz|ckd)$/i 
+  WAIT_TIME   = 1 # wait between download from rubima site
 
   Link = Struct.new(:title, :link, :file)
 
   module DL
     # retrieve <a> and <img> from html data
-    def self.parse_ref(data)
+    def self.scan_tag(data)
       links = {}
       doc = Nokogiri::HTML.parse(data)
       %w(a href img src).each_slice(2) do |tag, attr|
@@ -36,12 +37,12 @@ module Rubima
         else
           puts "# load(net) #{RUBIMA_HOME}/#{target}"
           data = open("#{RUBIMA_HOME}/#{target}", 'rb', &:read)
-          sleep 0.5
+          sleep WAIT_TIME
         end
       rescue
         puts $!
         data = ''
-     end
+      end
       data
     end
     
@@ -227,7 +228,7 @@ module Rubima
       doc = Nokogiri::HTML.parse(html)
       %w(a href img src).each_slice(2) do |tag, attr|
         doc.xpath("//#{tag}[@#{attr}]").each do |node|
-          ref, id = node[attr].split(/#/)
+          ref, _ = node[attr].split(/#/)
           next if !ref || ref.empty?
           if ref !~ REJECT_REF && !done[done]
             puts "# #{ref.inspect}"
