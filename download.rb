@@ -24,10 +24,10 @@ until rest.empty?
     item.file = file
   end
   
-  # parse it if it's html
+  # parse it if it's a html file
   if data =~ /^<!DOCTYPE/
     puts "# parse #{file}"
-    links = Rubima::DL::parse_ref(data)
+    links = Rubima::DL::scan_tag(data)
     puts "# got #{links.size} links"
     rest.merge!(links)
   end
