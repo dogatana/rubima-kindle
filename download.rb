@@ -1,12 +1,12 @@
 require 'rubima'
 
 rest = Rubima::DL.get_master_index('index.html')
-done = { 'index.html' => '' }
+done = { 'index.html': '' }
 
 until rest.empty?
   puts "#{done.size} / #{rest.size}"
   target, item = rest.shift
-
+  
   target = 'index.html' if target == './'
   next if target =~ /^(http|ftp|mailto|\.\/\?c=(diff|login|search|prep?\-)|#)/
   target = target.split(/#/)[0] # remove id
