@@ -13,12 +13,13 @@ def make_kindle(tops)
   spine_files = tops.dup
   
   tops.each do |file|
-    p file
+    puts "# process #{file}"
     _, links = Rubima.get_toplink(file)
     links.each do |link|
       spine_files << link.link
     end
   end
+
   spine_files.unshift 'kindle_index.html'
   
   items = []
