@@ -1,7 +1,5 @@
 require 'rubima'
 require 'kindle'
-require 'cgi'
-require 'pp'
 
 def make_nav(title, file, children)
   sub = []
