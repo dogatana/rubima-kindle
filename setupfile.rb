@@ -2,8 +2,6 @@ require 'rubima'
 require 'fileutils'
 require 'forwardable'
 
-DEST_DIR = 'kindle'
-
 class FileTable
   extend Forwardable
   def_delegators :@hash, :keys, :each
@@ -20,6 +18,12 @@ class FileTable
     @hash[key.downcase] = val
   end
 end
+
+dest_dir = if ARGV.empty?
+             'kindle'
+           else
+             ARGV[0].encode('utf-8')
+           end
 
 filename_table = FileTable.new
 
@@ -39,12 +43,12 @@ filename_table.each do |file, new_file|
   if new_file =~ /\.html$/i
     html = open(file, 'r:utf-8', &:read)
     new_html = Rubima::Setup::fix_html(html, filename_table)
-    open("../#{DEST_DIR}/#{new_file}", 'w:utf-8').write(new_html)
+    open("../#{dest_dir}/#{new_file}", 'w:utf-8').write(new_html)
   else
-    FileUtils.cp(file, "../#{DEST_DIR}/" + new_file)
+    FileUtils.cp(file, "../#{dest_dir}/" + new_file)
   end
 end
 
-FileUtils.cp_r('theme', "../#{DEST_DIR}")
-FileUtils.cp('../rubima.css', "../#{DEST_DIR}/theme/rubima")
-FileUtils.cp('theme/rubima/rubima_logo_l.png', "../#{DEST_DIR}/cover.png")
+FileUtils.cp_r('theme', "../#{dest_dir}")
+FileUtils.cp('../rubima.css', "../#{dest_dir}/theme/rubima")
+FileUtils.cp('theme/rubima/rubima_logo_l.png', "../#{dest_dir}/cover.png")
