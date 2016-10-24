@@ -232,7 +232,7 @@ module Rubima
       next if done[file]
       done[file] = true
       next unless file =~ /\.html$/i
-      puts file
+      # puts file
       html = open(file, 'r:utf-8', &:read)
       doc = Nokogiri::HTML.parse(html)
       %w(a href img src).each_slice(2) do |tag, attr|
@@ -240,7 +240,7 @@ module Rubima
           ref, _ = node[attr].split(/#/)
           next if !ref || ref.empty?
           if ref !~ REJECT_REF && !done[done]
-            puts "# #{ref.inspect}"
+            #puts "# #{ref.inspect}"
             links << ref
             rest << ref 
           end
