@@ -1,4 +1,7 @@
 require 'rubima'
+require 'fileutils'
+
+FileUtils.mkpath('theme/rubima')
 
 rest = Rubima::DL.get_master_index('index.html')
 done = { 'index.html': '' }
