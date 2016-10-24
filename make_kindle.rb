@@ -37,8 +37,8 @@ def make_kindle(tops)
     items << Kindle::BookItem.new(file)
   end
   info = Kindle::BookInfo.new(
-    'Rubist Magazin for for Kindle',
-    'るびま 創刊号',
+    'Rubyist Magazin for for Kindle',
+    '日本Rubyの会 るびま編集部',
     'ja', 'cover.png', '00000000')
   
   Kindle::Opf.new(info, items, ids).write('rubima.opf')
