@@ -347,6 +347,7 @@ div.main p.footnote {
 }
 
 div.main p.footnote a {
+	font-size: small;
 	text-decoration: none;
 }
 
