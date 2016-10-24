@@ -51,7 +51,10 @@ def make_navitems
   top = Rubima::DL::get_master_index('index.html')
   top.keys.reverse.each do |file|
     title, links = Rubima::get_toplink(file)
+    # 各号のRubyの歩き方を削除
     links.delete_if { |x| x.link == 'FirstStepRuby.html' }
+    # 日本 Ruby 会議 2011 直前特集号 に 0035 号の記事が入っているのを削除
+    links.delete_if { |x| x.link =~ /^0035/ } if file == 'preRubyKaigi2011.html'
     sub_items = links.inject([]) do |a, e|
                   a << Kindle::NavElement.new(e.title.strip, e.link)
                 end
