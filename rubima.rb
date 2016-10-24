@@ -89,7 +89,17 @@ module Rubima
       ret.tr('+ ', '_')
     end
     
+    def self.fix_language(doc)
+      doc.xpath('/html[@lang="en"]').each do |node|
+        node['lang'] = 'ja'
+      end
+      doc.xpath('//meta[@content="en"]').each do |node|
+        node['content'] = 'ja'
+      end
+    end
+    
     def self.fix_header(doc)
+      fix_language(doc)
       paths = %w(
         /html/head/meta[@http-equiv="Content-Script-Type"]
         /html/head/link[@rel="alternate"]
@@ -102,7 +112,7 @@ module Rubima
       doc.xpath(paths).each { |node| node.unlink }
     end
     
-    def self.fix_main(doc)
+    def self.fix_body(doc)
       footnote = doc.xpath('//div[@class="footnote"]')
       main = doc.xpath('/html/body/div/div[@class="contents"]/div[@class="main"]')
       
@@ -172,7 +182,7 @@ module Rubima
       doc = Nokogiri::HTML.parse(html)
       
       fix_header(doc)
-      fix_main(doc)
+      fix_body(doc)
       
       # replace link
       modify_link(doc)
@@ -181,7 +191,6 @@ module Rubima
       doc.to_html
     end
   end
-  
   
   # convert link to valid filename
   def self.get_name(link)
