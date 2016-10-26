@@ -50,5 +50,5 @@ filename_table.each do |file, new_file|
 end
 
 FileUtils.cp_r('theme', "../#{dest_dir}")
-FileUtils.cp('../rubima.css', "../#{dest_dir}/theme/rubima")
+FileUtils.cp('../new_rubima.css', "../#{dest_dir}/theme/rubima/rubima.css")
 FileUtils.cp('theme/rubima/rubima_logo_l.png', "../#{dest_dir}/cover.png")
