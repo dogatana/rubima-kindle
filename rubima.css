@@ -351,6 +351,10 @@ div.main p.footnote a {
 	text-decoration: none;
 }
 
+p.footnote {
+	font-size: small;
+}
+
 /* rightbar */
 div.footer {
 	font-size: 90%;
