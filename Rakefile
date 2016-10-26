@@ -1,4 +1,4 @@
-DOWNLOAD_DIR = 'download2'
+DOWNLOAD_DIR = 'download'
 KINDLE_DIR   = 'kindle'
 
 task :default => %i(download setupfile mobi)
