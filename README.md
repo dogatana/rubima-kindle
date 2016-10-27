@@ -5,6 +5,10 @@
 Rubyist Magazine の Web
 http://magazine.rubyist.net/ で公開されている Rubyist Magazine のmobiファイル（Amazon Kindleの電子書籍フォーマット）へ変換するものです。
 
+## 対象となるRubyist Magazine
+- 現時点では創刊号から54号まで
+- 一応 index.html の読み出し結果から検索しているので、新しい号が追加されても大丈夫なはず
+
 ## 必要なもの
 - Kindlegen
 - amazon のWebページからダウンロードし、PATHを通しておくこと
