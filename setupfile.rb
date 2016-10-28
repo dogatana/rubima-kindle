@@ -11,11 +11,11 @@ class FileTable
   end
   
   def [](key)
-    @hash[key.downcase]
+    @hash[key]
   end
   
   def []=(key, val)
-    @hash[key.downcase] = val
+    @hash[key] = val
   end
 end
 
