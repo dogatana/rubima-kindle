@@ -1,4 +1,4 @@
-# Rubyist Manzine Kindle 化
+# Rubyist Magazine Kindle 化
 
 ## はじめに
 
