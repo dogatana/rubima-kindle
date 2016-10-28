@@ -1,29 +1,37 @@
 # Rubyist Magazine Kindle 化
 
+## 改訂履歴
+Oct. 26, 2016 - 初版公開    
+Oct. 28, 2016 - README.md のTypo修正とLinuxでsetupfileが失敗するのを修正
+
 ## はじめに
 
-Rubyist Magazine の Web
-http://magazine.rubyist.net/ で公開されている Rubyist Magazine のmobiファイル（Amazon Kindleの電子書籍フォーマット）へ変換するものです。
+Rubyist Magazine の Web ページ
+http://magazine.rubyist.net/ で公開されている Rubyist Magazine をmobiファイル（Amazon Kindleの電子書籍フォーマット）へ変換するものです。
 
 ## 対象となるRubyist Magazine
-- 現時点では創刊号から54号まで
+- 現時点(2016年10月)では創刊号から54号まで
 - 一応 index.html の読み出し結果から検索しているので、新しい号が追加されても大丈夫なはず
 
 ## 必要なもの
 - Kindlegen
-- amazon のWebページからダウンロードし、PATHを通しておくこと
+  - amazon のWebページからダウンロードし、PATHを通しておくこと
+- Nokogiri
+  - gem i nokogiri でインストール
 
 ## 利用方法
 
 1. コマンドプロンプトから rake を実行する
 2. しばらくすると kindle フォルダに rubima.mob が作成される
+  - kindlegenで警告が出ますが、mobiファイルは作成されています
 3. Kindle へ転送する
 4. Kindle で読む
 
-## ダウンロードについて時間について
+## ダウンロード時間について
 
 - Webページからのダウンロードの際、1ファイルのダウンロード毎に1秒のウェイトを取っています。
 全部で2700ファイルほどダウンロードするので、気長に待ってください。
+
 
 ## ライセンス
 
