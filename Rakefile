@@ -13,6 +13,11 @@ desc 'download file'
 task :download do
   mkpath DOWNLOAD_DIR
   chdir DOWNLOAD_DIR do
+    # download ファイル名の旧→新変換
+    unless Dir['p=*'].empty?
+      puts 'update names of downloaded files'
+      sh 'ruby ..\update_name.rb'
+    end
     sh 'ruby -I.. ../download.rb'
   end
 end

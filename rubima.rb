@@ -196,7 +196,8 @@ module Rubima
   def self.get_name(link)
     link.sub(%r|^(\./)?\?|, '')
          .sub(/c=plugin;plugin=attach_download;/, '')
-         .sub(/file_name=/, 'f=')
+         .sub(/p=/, 'p_')
+         .sub(/file_name=/, '')
          .gsub(/;/, '_')
   end
   
