@@ -1,7 +1,9 @@
 # Copyright (c) 2016 dogatana(Toshihiko Ichida)
 
-module Kindle
 require 'forwardable'
+require 'cgi'
+
+module Kindle
 
 class NavElement
   attr_reader :title, :attr
