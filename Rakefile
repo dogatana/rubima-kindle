@@ -16,7 +16,7 @@ task :download do
     # download ファイル名の旧→新変換
     unless Dir['p=*'].empty?
       puts 'update names of downloaded files'
-      sh 'ruby ..\update_name.rb'
+      sh 'ruby ../update_name.rb'
     end
     sh 'ruby -I.. ../download.rb'
   end
