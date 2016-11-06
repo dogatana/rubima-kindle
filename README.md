@@ -46,15 +46,13 @@ http://magazine.rubyist.net/ で公開されている Rubyist Magazine をmobi�
 - 一応 index.html の読み出し結果から検索しているので、新しい号が追加されても大丈夫なはず
 
 ## 必要なもの
-- Kindlegen
-  - amazon のWebページからダウンロードし、PATHを通しておくこと
 - gem
-  - Nokogiri
-  - FastImage
+  - bundler
 
 ## 利用方法
 
-1. コマンドプロンプトから rake を実行する  
+0. bundle install で必要な gem をインストールする。
+1. コマンドプロンプトから bundle exec rake を実行する  
   - 拡大率を指定する場合は rake MAG=<拡大率> のように指定する。
   - 例）拡大率 2.2 を指定する場合 => rake MAG=2.2
 2. しばらくすると kindle フォルダに rubima.mobi が作成される
