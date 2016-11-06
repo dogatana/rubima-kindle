@@ -1,6 +1,5 @@
 require 'nokogiri'
 require 'open-uri'
-require 'cgi'
 require 'pp'
 
 module Rubima
@@ -83,10 +82,9 @@ module Rubima
         ret = name.gsub(/(%\h\h)+/) do |str|
           s = str[1..-1].split(/%/).map(&:hex).pack('c*')
           s.force_encoding('utf-8')
-          s.gsub(/\+/, '_')
         end
       end
-      ret.tr('+ ', '_')
+      ret.tr('+ ', '_') # 空白は _ へ
     end
     
     def self.fix_language(doc)

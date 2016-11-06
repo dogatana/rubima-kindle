@@ -1,6 +1,6 @@
 require 'nokogiri'
 require 'fastimage'
-require 'cgi'
+require 'rubima'
 
 def image_size(file)
   FastImage.new(file).size # [width, height]
@@ -21,7 +21,7 @@ def magnify_image(file, factor)
 
   doc = Nokogiri::HTML.parse(html)
   doc.xpath('//img').each do |node|
-    image_file = CGI.unescape node['src']
+    image_file = Rubima::Setup.unescape_name node['src']
     next if image_file.empty? || image_file =~ /^http/
     #puts image_file
     width, height = calc_size(factor,
