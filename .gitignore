@@ -3,3 +3,5 @@
 *.txt
 misc/
 download2/
+.bundle
+vendor/

@@ -1,0 +1,25 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    addressable (2.5.0)
+      public_suffix (~> 2.0, >= 2.0.2)
+    fastimage (2.0.1)
+      addressable (~> 2)
+    kindlegen (2.9.7)
+    mini_portile2 (2.1.0)
+    nokogiri (1.6.8.1)
+      mini_portile2 (~> 2.1.0)
+    public_suffix (2.0.3)
+    rake (11.3.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  fastimage
+  kindlegen
+  nokogiri
+  rake
+
+BUNDLED WITH
+   1.11.2
