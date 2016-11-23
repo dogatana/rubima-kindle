@@ -3,7 +3,8 @@
 ## 改訂履歴
 Oct. 26, 2016 - 初版公開    
 Oct. 28, 2016 - README.md のTypo修正とLinuxでsetupfileが失敗するのを修正  
-Nov. 6, 2016 - ダウンロードファイル時の保存ファイル名の変更。Issue #5 の対策
+Nov. 6, 2016 - ダウンロードファイル時の保存ファイル名の変更。Issue #5 の対策  
+Nov. 23, 2016 - Gemfile の追加
 
 ----
 ## Nov. 6, 2016 の変更内容
@@ -49,18 +50,18 @@ http://magazine.rubyist.net/ で公開されている Rubyist Magazine をmobi�
 - Kindlegen
   - amazon のWebページからダウンロードし、PATHを通しておくこと
 - gem
-  - Nokogiri
-  - FastImage
+  - bunlder
 
 ## 利用方法
 
-1. コマンドプロンプトから rake を実行する  
+1. bundle install で必要な gem をインストーする
+2. コマンドプロンプトから bundle exec rake を実行する  
   - 拡大率を指定する場合は rake MAG=<拡大率> のように指定する。
   - 例）拡大率 2.2 を指定する場合 => rake MAG=2.2
-2. しばらくすると kindle フォルダに rubima.mobi が作成される
+3. しばらくすると kindle フォルダに rubima.mobi が作成される
   - kindlegenで警告が出ますが、mobiファイルは作成されています
-3. Kindle へ転送する
-4. Kindle で読む
+4. Kindle へ転送する
+5. Kindle で読む
 
 
 ## ダウンロード時間について
